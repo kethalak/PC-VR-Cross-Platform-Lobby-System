@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Steamworks;
 using TMPro;
 
@@ -25,6 +26,7 @@ public class SteamMenu : MonoBehaviour {
 	public Button createLobby;
 	public Button viewLobbies;
 	public Button quit;
+    public Button switchDevice;
 
 	[Header("UI Components")]
     public GameObject lobby;
@@ -58,6 +60,7 @@ public class SteamMenu : MonoBehaviour {
 		viewLobbies.onClick.AddListener(ViewLobbies);
 		quit.onClick.AddListener(Quit);
         lobbyBack.onClick.AddListener(Back);
+        switchDevice.onClick.AddListener(loadSplashScene);
 	}
 
 		IEnumerator Fetchuser(CSteamID id){
@@ -126,7 +129,6 @@ public class SteamMenu : MonoBehaviour {
 
     void RefreshLobbies(){
         for(int i = 0; i < lobbyIDS.Count; i++){
-            Debug.Log("Lobby " + " :: " + SteamMatchmaking.GetLobbyData(lobbyIDS[i], "name"));
             int newPos = 0;
             lobbies.Add(Instantiate(lobby, Vector3.zero, lobby.transform.rotation));
             TextMeshProUGUI[] texts = lobbies[i].GetComponentsInChildren<TextMeshProUGUI>();
@@ -166,6 +168,10 @@ public class SteamMenu : MonoBehaviour {
         awaitMsg.gameObject.SetActive(!awaitMsg.gameObject.activeSelf);
     }
 
+    void loadSplashScene(){
+        SceneManager.LoadScene("StartUp");
+    }
+    
 	void Update()
 	{
         SteamAPI.RunCallbacks();
@@ -211,21 +217,13 @@ public class SteamMenu : MonoBehaviour {
 
     void OnGetLobbyInfo(LobbyDataUpdate_t result)
     {
-        for(int i=0; i<lobbyIDS.Count; i++)
-        {
-            if (lobbyIDS[i].m_SteamID == result.m_ulSteamIDLobby)
-            {
-                Debug.Log("Lobby " + i+" :: " +SteamMatchmaking.GetLobbyData((CSteamID)lobbyIDS[i].m_SteamID, "name"));
-                return;
-            }
-        }
-       
+       Debug.Log("Something Happened");
     }
 
     void OnLobbyEntered(LobbyEnter_t result)
     {
         foreach(GameObject lobby in lobbies)
-            Destroy(lobby);
+        Destroy(lobby);
         lobbies.Clear();
         current_lobbyID = result.m_ulSteamIDLobby;
         lobbyHeader.text = SteamMatchmaking.GetLobbyData((CSteamID)current_lobbyID, "name");

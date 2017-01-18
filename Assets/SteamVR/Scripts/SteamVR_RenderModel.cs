@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using UnityEngine.VR;
 using Valve.VR;
 
 [ExecuteInEditMode]
@@ -620,6 +621,9 @@ public class SteamVR_RenderModel : MonoBehaviour
 #endif
 	void Update()
 	{
+		if (!VRSettings.enabled)
+			return;
+
 #if UNITY_EDITOR
 		if (!Application.isPlaying)
 		{
