@@ -87,13 +87,15 @@ public class SteamMenu : MonoBehaviour {
 	}
 
 	void CreateLobby(){
-		ToggleAwaitCallbackMsg("creating lobby...");
+        ToggleLobby();        
         ToggleMain();
+		ToggleAwaitCallbackMsg("creating lobby...");
 		SteamAPICall_t try_toHost = SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, 4);
 	}
 
 	void ViewLobbies(){
 		ToggleAwaitCallbackMsg("finding available lobbies...");
+        ToggleLobby();        
         ToggleMain();
 		SteamAPICall_t try_getList = SteamMatchmaking.RequestLobbyList();
 	}
@@ -110,9 +112,7 @@ public class SteamMenu : MonoBehaviour {
         foreach(GameObject lobby in lobbies)
         Destroy(lobby);
         lobbies.Clear();
-        lobbyHeader.gameObject.SetActive(false);
-        lobbyBack.gameObject.SetActive(false);
-        
+        ToggleLobby();        
         ToggleMain();
     }
 
@@ -125,17 +125,27 @@ public class SteamMenu : MonoBehaviour {
     }
 
     void RefreshLobbies(){
-        foreach(CSteamID id in lobbyIDS){
+        for(int i = 0; i < lobbyIDS.Count; i++){
+            Debug.Log("Lobby " + " :: " + SteamMatchmaking.GetLobbyData(lobbyIDS[i], "name"));
             int newPos = 0;
-            GameObject lobbyClone = Instantiate(lobby, Vector3.zero, Quaternion.identity);
-            GameObject joinButton = Instantiate(lobbyJoin, Vector3.zero, Quaternion.identity);
-            lobbyClone.transform.localPosition = new Vector3(-200,90+newPos,0);
-            joinButton.transform.localPosition = new Vector3(-400,90+newPos,0);
-            joinButton.transform.SetParent(lobbyClone.transform);
-            joinButton.GetComponent<JoinLobbyButton>().joinID = id;
-            TextMeshProUGUI playerAmt = GetComponent<TextMeshProUGUI>();
-            playerAmt.text = SteamMatchmaking.GetNumLobbyMembers(id).ToString()+ "/4";
-            lobbies.Add(lobbyClone);
+            lobbies.Add(Instantiate(lobby, Vector3.zero, lobby.transform.rotation));
+            TextMeshProUGUI[] texts = lobbies[i].GetComponentsInChildren<TextMeshProUGUI>();
+                
+            foreach(TextMeshProUGUI textMesh in texts)
+            {
+                if(textMesh.gameObject.transform.parent != null)
+                    textMesh.text = SteamMatchmaking.GetNumLobbyMembers(lobbyIDS[i]).ToString() + "/4";
+                else
+                    textMesh.text = SteamMatchmaking.GetLobbyData(lobbyIDS[i], "name");
+                
+            }
+
+            GameObject joinButton = Instantiate(lobbyJoin, Vector3.zero, lobbyJoin.transform.rotation);
+            lobbies[i].transform.SetParent(this.transform.parent);
+            joinButton.transform.SetParent(lobbies[i].transform);
+            lobbies[i].transform.localPosition = new Vector3(-70,90+newPos,0);
+            joinButton.transform.localPosition = new Vector3(470,0,0);
+            joinButton.GetComponent<JoinLobbyButton>().joinID = lobbyIDS[i];
         }
     }
 
@@ -184,8 +194,6 @@ public class SteamMenu : MonoBehaviour {
         }
         string gameName = SteamFriends.GetPersonaName() + "'s game";
         SteamMatchmaking.SetLobbyData((CSteamID)result.m_ulSteamIDLobby, "name", gameName);
-        lobbyHeader.text = gameName;
-        ToggleLobby();
     }
 
     void OnGetLobbiesList(LobbyMatchList_t result)
@@ -198,7 +206,6 @@ public class SteamMenu : MonoBehaviour {
             lobbyIDS.Add(lobbyID);
         }
             lobbyHeader.text = "List of Lobbies";
-            ToggleLobby();
             RefreshLobbies();
     }
 
@@ -217,8 +224,11 @@ public class SteamMenu : MonoBehaviour {
 
     void OnLobbyEntered(LobbyEnter_t result)
     {
+        foreach(GameObject lobby in lobbies)
+            Destroy(lobby);
+        lobbies.Clear();
         current_lobbyID = result.m_ulSteamIDLobby;
-        
+        lobbyHeader.text = SteamMatchmaking.GetLobbyData((CSteamID)current_lobbyID, "name");
         if (result.m_EChatRoomEnterResponse == 1){
             SteamMenu steamMenu = GetComponent<SteamMenu>();
             int numPlayers = SteamMatchmaking.GetNumLobbyMembers((CSteamID)current_lobbyID);
