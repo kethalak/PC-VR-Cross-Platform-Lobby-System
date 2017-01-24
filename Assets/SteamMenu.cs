@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Steamworks;
 using TMPro;
 
-public class SteamMenu : MonoBehaviour {
+public class SteamMenu : NetworkLobbyManager {
 
     private Callback<LobbyCreated_t> Callback_lobbyCreated;
     private Callback<LobbyMatchList_t> Callback_lobbyList;
@@ -15,6 +17,8 @@ public class SteamMenu : MonoBehaviour {
 
     ulong current_lobbyID;
     List<CSteamID> lobbyIDS;
+    public SteamServerManager steamServerManager;
+    bool isHost = false;
 
     [Header("Lobby Menu")]
     public TextMeshProUGUI awaitMsg;
@@ -32,8 +36,8 @@ public class SteamMenu : MonoBehaviour {
     public GameObject lobby;
     public GameObject lobbyJoin;
 	public GameObject user;
-    public List<GameObject> users;
-    public List<GameObject> lobbies;
+    List<GameObject> users = new List<GameObject>();
+    List<GameObject> lobbies = new List<GameObject>();
     
 
 	TextMeshProUGUI userText;
@@ -87,13 +91,14 @@ public class SteamMenu : MonoBehaviour {
 		}
         
      users.Add(userClone);
+     RefreshUsers();
 	}
 
 	void CreateLobby(){
         ToggleLobby();        
         ToggleMain();
 		ToggleAwaitCallbackMsg("creating lobby...");
-		SteamAPICall_t try_toHost = SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, 4);
+		steamServerManager.CreateServer();
 	}
 
 	void ViewLobbies(){
@@ -109,6 +114,7 @@ public class SteamMenu : MonoBehaviour {
 
     void Back(){
         SteamMatchmaking.LeaveLobby((CSteamID)current_lobbyID);
+        isHost = false;
         foreach(GameObject user in users)
         Destroy(user);
         users.Clear();
@@ -117,6 +123,11 @@ public class SteamMenu : MonoBehaviour {
         lobbies.Clear();
         ToggleLobby();        
         ToggleMain();
+        if(steamServerManager.gs_ConnectedToSteam){
+		SteamGameServer.LogOff();
+		GameServer.Shutdown();
+		Debug.Log("Shutdown.");
+        }
     }
 
     void RefreshUsers(){
@@ -139,7 +150,6 @@ public class SteamMenu : MonoBehaviour {
                     textMesh.text = SteamMatchmaking.GetNumLobbyMembers(lobbyIDS[i]).ToString() + "/4";
                 else
                     textMesh.text = SteamMatchmaking.GetLobbyData(lobbyIDS[i], "name");
-                
             }
 
             GameObject joinButton = Instantiate(lobbyJoin, Vector3.zero, lobbyJoin.transform.rotation);
@@ -191,6 +201,9 @@ public class SteamMenu : MonoBehaviour {
 
     void OnLobbyCreated(LobbyCreated_t result)
     {
+        isHost = true;
+        StartHost();
+        ServerChangeScene(playScene);
         ToggleAwaitCallbackMsg();
         if (result.m_eResult == EResult.k_EResultOK)
             Debug.Log("Lobby created -- SUCCESS!");
@@ -199,6 +212,12 @@ public class SteamMenu : MonoBehaviour {
             return;
         }
         string gameName = SteamFriends.GetPersonaName() + "'s game";
+
+        uint serverIp = SteamGameServer.GetPublicIP();
+        int ipaddr = System.Net.IPAddress.HostToNetworkOrder((int)serverIp);
+        string ip = new System.Net.IPAddress(BitConverter.GetBytes(ipaddr)).ToString();
+        Debug.Log(ip);
+        SteamMatchmaking.SetLobbyData((CSteamID)result.m_ulSteamIDLobby, "ServerIP", ip);
         SteamMatchmaking.SetLobbyData((CSteamID)result.m_ulSteamIDLobby, "name", gameName);
     }
 
@@ -222,21 +241,26 @@ public class SteamMenu : MonoBehaviour {
 
     void OnLobbyEntered(LobbyEnter_t result)
     {
+        if(!isHost){
+            networkAddress = SteamMatchmaking.GetLobbyData((CSteamID)result.m_ulSteamIDLobby, "ServerIP");
+            Debug.Log(networkAddress);
+            StartClient();
+            ServerChangeScene(playScene);
+        }
         foreach(GameObject lobby in lobbies)
         Destroy(lobby);
         lobbies.Clear();
         current_lobbyID = result.m_ulSteamIDLobby;
         lobbyHeader.text = SteamMatchmaking.GetLobbyData((CSteamID)current_lobbyID, "name");
         if (result.m_EChatRoomEnterResponse == 1){
-            SteamMenu steamMenu = GetComponent<SteamMenu>();
             int numPlayers = SteamMatchmaking.GetNumLobbyMembers((CSteamID)current_lobbyID);
             for (int i = 0; i < numPlayers; i++)
             {   
                 StartCoroutine(Fetchuser(SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)current_lobbyID, i)));
             }
-        RefreshUsers();
         }
         else
             Debug.Log("Failed to join lobby.");
     }
+
 }

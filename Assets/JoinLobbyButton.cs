@@ -3,15 +3,14 @@ using UnityEngine.UI;
 using Steamworks;
 public class JoinLobbyButton : MonoBehaviour {
 	public CSteamID joinID;
-	Button joinButton;
+	Button joinBtn;
 
-	void Awake(){
-		joinButton = GetComponent<Button>();
-	}
 	void Start(){
-		joinButton.onClick.AddListener(JoinLobby);
+		joinBtn = this.GetComponent<Button>();
+		joinBtn.onClick.AddListener(JoinLobby);
 	}
 	void JoinLobby(){
 		SteamAPICall_t try_joinLobby = SteamMatchmaking.JoinLobby(joinID);
+		Debug.Log("test join");
 	}
 }
