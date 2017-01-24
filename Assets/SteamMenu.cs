@@ -18,6 +18,7 @@ public class SteamMenu : NetworkLobbyManager {
     ulong current_lobbyID;
     List<CSteamID> lobbyIDS;
     public SteamServerManager steamServerManager;
+    public Canvas menuCanvas;
     bool isHost = false;
 
     [Header("Lobby Menu")]
@@ -67,9 +68,9 @@ public class SteamMenu : NetworkLobbyManager {
         switchDevice.onClick.AddListener(loadSplashScene);
 	}
 
-		IEnumerator Fetchuser(CSteamID id){
+		IEnumerator FetchAvatar(CSteamID id){
 		GameObject userClone = Instantiate(user, Vector3.zero, user.transform.rotation);
-		userClone.transform.SetParent(this.transform.parent);
+		userClone.transform.SetParent(menuCanvas.transform);
 		userText = userClone.GetComponentInChildren<TextMeshProUGUI>();
 		userImage = userClone.GetComponent<Image>();
 		userInt = SteamFriends.GetLargeFriendAvatar(id);
@@ -203,7 +204,7 @@ public class SteamMenu : NetworkLobbyManager {
     {
         isHost = true;
         StartHost();
-        ServerChangeScene(playScene);
+        // ServerChangeScene(playScene);
         ToggleAwaitCallbackMsg();
         if (result.m_eResult == EResult.k_EResultOK)
             Debug.Log("Lobby created -- SUCCESS!");
@@ -245,7 +246,7 @@ public class SteamMenu : NetworkLobbyManager {
             networkAddress = SteamMatchmaking.GetLobbyData((CSteamID)result.m_ulSteamIDLobby, "ServerIP");
             Debug.Log(networkAddress);
             StartClient();
-            ServerChangeScene(playScene);
+            // ServerChangeScene(playScene);
         }
         foreach(GameObject lobby in lobbies)
         Destroy(lobby);
@@ -256,7 +257,7 @@ public class SteamMenu : NetworkLobbyManager {
             int numPlayers = SteamMatchmaking.GetNumLobbyMembers((CSteamID)current_lobbyID);
             for (int i = 0; i < numPlayers; i++)
             {   
-                StartCoroutine(Fetchuser(SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)current_lobbyID, i)));
+                StartCoroutine(FetchAvatar(SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)current_lobbyID, i)));
             }
         }
         else
