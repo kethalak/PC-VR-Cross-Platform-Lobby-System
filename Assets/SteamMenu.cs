@@ -204,7 +204,7 @@ public class SteamMenu : NetworkLobbyManager {
     {
         isHost = true;
         StartHost();
-        // ServerChangeScene(playScene);
+        ServerChangeScene(playScene);
         ToggleAwaitCallbackMsg();
         if (result.m_eResult == EResult.k_EResultOK)
             Debug.Log("Lobby created -- SUCCESS!");
@@ -246,7 +246,7 @@ public class SteamMenu : NetworkLobbyManager {
             networkAddress = SteamMatchmaking.GetLobbyData((CSteamID)result.m_ulSteamIDLobby, "ServerIP");
             Debug.Log(networkAddress);
             StartClient();
-            // ServerChangeScene(playScene);
+            ServerChangeScene(playScene);
         }
         foreach(GameObject lobby in lobbies)
         Destroy(lobby);
