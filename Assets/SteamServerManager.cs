@@ -6,6 +6,8 @@ using Steamworks;
 
 public class SteamServerManager : MonoBehaviour {
 
+	static public SteamServerManager _instance;
+
     const string WIZVR_SERVER_VERSION = "1.0.0.0";
     const ushort WIZVR_AUTHENTICATION_PORT = 8766;
     const ushort WIZVR_SERVER_PORT = 27015;
@@ -21,6 +23,7 @@ public class SteamServerManager : MonoBehaviour {
 	protected Callback<GSPolicyResponse_t> m_CallbackPolicyResponse;
 
 	void Start(){
+		_instance = this;
         Callback_ServerConnected = Callback<SteamServersConnected_t>.CreateGameServer(OnSteamServerConnected);
         Callback_ServerDisconnected = Callback<SteamServersDisconnected_t>.CreateGameServer(OnSteamServerDisconnected);
 		Callback_ServerConnectFailure = Callback<SteamServerConnectFailure_t>.CreateGameServer(OnSteamServersConnectFailure);

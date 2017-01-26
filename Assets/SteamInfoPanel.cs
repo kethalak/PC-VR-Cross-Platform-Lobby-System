@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class test : MonoBehaviour {
+public class SteamInfoPanel : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log(Random.Range(0,100));
+		
 	}
 	
 	// Update is called once per frame

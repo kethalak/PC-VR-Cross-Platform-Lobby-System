@@ -8,7 +8,9 @@ using UnityEngine.SceneManagement;
 using Steamworks;
 using TMPro;
 
-public class SteamMenu : NetworkLobbyManager {
+public class SteamLobbyManager : NetworkLobbyManager {
+
+    static public SteamLobbyManager _instance;
 
     private Callback<LobbyCreated_t> Callback_lobbyCreated;
     private Callback<LobbyMatchList_t> Callback_lobbyList;
@@ -17,30 +19,26 @@ public class SteamMenu : NetworkLobbyManager {
 
     ulong current_lobbyID;
     List<CSteamID> lobbyIDS;
-    public SteamServerManager steamServerManager;
-    public Canvas menuCanvas;
+
+
     bool isHost = false;
 
-    [Header("Lobby Menu")]
+    [Header("UI Reference")]
     public TextMeshProUGUI awaitMsg;
-    public TextMeshProUGUI lobbyHeader;
-    public Button lobbyBack;
+    public Button backButton;
 
-    [Header("Main Menu")]
-    public TextMeshProUGUI gameTitle;
-	public Button createLobby;
-	public Button viewLobbies;
-	public Button quit;
-    public Button switchDevice;
+    public RectTransform mainMenuPanel;
+    public RectTransform lobbyPanel;
+    public RectTransform lobbyListPanel;
 
-	[Header("UI Components")]
     public GameObject lobby;
     public GameObject lobbyJoin;
-	public GameObject user;
-    List<GameObject> users = new List<GameObject>();
     List<GameObject> lobbies = new List<GameObject>();
-    
 
+    public float prematchCountdown = 5.0f;
+
+    protected RectTransform currentPanel;
+    
 	TextMeshProUGUI userText;
 	Image userImage;
 	int userInt;
@@ -50,7 +48,12 @@ public class SteamMenu : NetworkLobbyManager {
 	Vector2 pivot = new Vector2(0.5f, 0.5f);
 
 	void Start(){
+        _instance = this;
+        currentPanel = mainMenuPanel;
+
 		lobbyIDS = new List<CSteamID>();
+        backButton.gameObject.SetActive(false);
+
         Callback_lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         Callback_lobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbiesList);
         Callback_lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
@@ -60,84 +63,83 @@ public class SteamMenu : NetworkLobbyManager {
             Debug.Log("Steam API init -- SUCCESS!");
         else
             Debug.Log("Steam API init -- failure ...");
-
-		createLobby.onClick.AddListener(CreateLobby);
-		viewLobbies.onClick.AddListener(ViewLobbies);
-		quit.onClick.AddListener(Quit);
-        lobbyBack.onClick.AddListener(Back);
-        switchDevice.onClick.AddListener(loadSplashScene);
 	}
-
-		IEnumerator FetchAvatar(CSteamID id){
-		GameObject userClone = Instantiate(user, Vector3.zero, user.transform.rotation);
-		userClone.transform.SetParent(menuCanvas.transform);
-		userText = userClone.GetComponentInChildren<TextMeshProUGUI>();
-		userImage = userClone.GetComponent<Image>();
-		userInt = SteamFriends.GetLargeFriendAvatar(id);
-		userText.SetText(SteamFriends.GetFriendPersonaName(id));
-		while(userInt == -1){
-			yield return null;
-		}
-		if(userInt > 0){
-			SteamUtils.GetImageSize(userInt, out width, out height);
-		}
-		if(width > 0 && height > 0){
-			byte[] avatarStream = new byte[4 * (int)width * (int)height];
-			SteamUtils.GetImageRGBA(userInt, avatarStream, 4 * (int)width * (int)height);
-			downloadedAvatar = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false);
-			downloadedAvatar.LoadRawTextureData(avatarStream);
-			downloadedAvatar.Apply();
-
-			userImage.sprite = Sprite.Create(downloadedAvatar, rect, pivot);
-		}
-        
-     users.Add(userClone);
-     RefreshUsers();
-	}
-
-	void CreateLobby(){
-        ToggleLobby();        
-        ToggleMain();
-		ToggleAwaitCallbackMsg("creating lobby...");
-		steamServerManager.CreateServer();
-	}
-
-	void ViewLobbies(){
-		ToggleAwaitCallbackMsg("finding available lobbies...");
-        ToggleLobby();        
-        ToggleMain();
-		SteamAPICall_t try_getList = SteamMatchmaking.RequestLobbyList();
-	}
-
-	void Quit(){
-		Application.Quit();
-	}
-
-    void Back(){
-        SteamMatchmaking.LeaveLobby((CSteamID)current_lobbyID);
-        isHost = false;
-        foreach(GameObject user in users)
-        Destroy(user);
-        users.Clear();
-        foreach(GameObject lobby in lobbies)
-        Destroy(lobby);
-        lobbies.Clear();
-        ToggleLobby();        
-        ToggleMain();
-        if(steamServerManager.gs_ConnectedToSteam){
-		SteamGameServer.LogOff();
-		GameServer.Shutdown();
-		Debug.Log("Shutdown.");
+    public override void OnLobbyClientSceneChanged(NetworkConnection conn)
+    {
+        if (SceneManager.GetSceneAt(0).name == lobbyScene)
+        {
+            ChangeTo(lobbyPanel);
+            if (conn.playerControllers[0].unetView.isClient)
+                backDelegate = StopHostClbk;
+            else
+                backDelegate = StopClientClbk;   
+        }
+        else
+        {
+            ChangeTo(null);
         }
     }
 
-    void RefreshUsers(){
-        int newPos = 0;
-        foreach(GameObject user in users){
-        user.transform.localPosition = new Vector3(-200,90+newPos,0);
-        newPos -= 75;
+    public void ChangeTo(RectTransform newPanel)
+    {
+        if (currentPanel != null)
+            currentPanel.gameObject.SetActive(false);
+
+        if (newPanel != null)
+            newPanel.gameObject.SetActive(true);
+        else{
+            lobbyPanel.gameObject.SetActive(false);
+            backButton.gameObject.SetActive(false);
+            ToggleAwaitCallbackMsg();
+            return;
         }
+        currentPanel = newPanel;
+
+        if (currentPanel != mainMenuPanel)
+            backButton.gameObject.SetActive(true);
+
+        else
+            backButton.gameObject.SetActive(false);
+
     }
+
+        public delegate void BackButtonDelegate();
+        public BackButtonDelegate backDelegate;
+        public void GoBackButton()
+        {
+            backDelegate();
+        }
+
+        public void SimpleBackClbk()
+        {
+            ChangeTo(mainMenuPanel);
+        }
+
+        public void StopViewLobbiesClbk()
+        {
+            foreach(GameObject lobby in lobbies)
+            Destroy(lobby);
+            lobbies.Clear();
+            ChangeTo(mainMenuPanel);
+        }
+                 
+        public void StopHostClbk()
+        {
+            isHost = false;
+            SteamMatchmaking.LeaveLobby((CSteamID)current_lobbyID);
+            StopHost();
+            ChangeTo(mainMenuPanel);
+            SteamGameServer.LogOff();
+            GameServer.Shutdown();
+            Debug.Log("Shutdown.");
+        }
+
+        public void StopClientClbk()
+        {
+            SteamMatchmaking.LeaveLobby((CSteamID)current_lobbyID);
+            StopClient();
+            ChangeTo(mainMenuPanel);
+        }
 
     void RefreshLobbies(){
         for(int i = 0; i < lobbyIDS.Count; i++){
@@ -154,7 +156,7 @@ public class SteamMenu : NetworkLobbyManager {
             }
 
             GameObject joinButton = Instantiate(lobbyJoin, Vector3.zero, lobbyJoin.transform.rotation);
-            lobbies[i].transform.SetParent(this.transform.parent);
+            lobbies[i].transform.SetParent(this.transform);
             joinButton.transform.SetParent(lobbies[i].transform);
             lobbies[i].transform.localPosition = new Vector3(-70,90+newPos,0);
             joinButton.transform.localPosition = new Vector3(470,0,0);
@@ -162,27 +164,15 @@ public class SteamMenu : NetworkLobbyManager {
         }
     }
 
-    void ToggleLobby(){
-        lobbyHeader.gameObject.SetActive(!lobbyHeader.gameObject.activeSelf);
-        lobbyBack.gameObject.SetActive(!lobbyBack.gameObject.activeSelf);
-    }
-
-    void ToggleMain(){
-        gameTitle.gameObject.SetActive(!gameTitle.gameObject.activeSelf);
-        createLobby.gameObject.SetActive(!createLobby.gameObject.activeSelf);
-        viewLobbies.gameObject.SetActive(!viewLobbies.gameObject.activeSelf);
-        quit.gameObject.SetActive(!quit.gameObject.activeSelf);
-    }
-
-    void ToggleAwaitCallbackMsg(string msg = ""){
+    public void ToggleAwaitCallbackMsg(string msg = ""){
         awaitMsg.text = msg;
         awaitMsg.gameObject.SetActive(!awaitMsg.gameObject.activeSelf);
     }
 
-    void loadSplashScene(){
-        SceneManager.LoadScene("StartUp");
+    void StartGame(){
+        ServerChangeScene(playScene);
     }
-    
+
 	void Update()
 	{
         SteamAPI.RunCallbacks();
@@ -200,11 +190,11 @@ public class SteamMenu : NetworkLobbyManager {
         }
     }
 
-    void OnLobbyCreated(LobbyCreated_t result)
+    void OnLobbyCreated(LobbyCreated_t result) 
     {
         isHost = true;
         StartHost();
-        ServerChangeScene(playScene);
+        backDelegate = StopHostClbk;
         ToggleAwaitCallbackMsg();
         if (result.m_eResult == EResult.k_EResultOK)
             Debug.Log("Lobby created -- SUCCESS!");
@@ -212,6 +202,7 @@ public class SteamMenu : NetworkLobbyManager {
             Debug.Log("Lobby created -- failure ...");
             return;
         }
+
         string gameName = SteamFriends.GetPersonaName() + "'s game";
 
         uint serverIp = SteamGameServer.GetPublicIP();
@@ -224,6 +215,7 @@ public class SteamMenu : NetworkLobbyManager {
 
     void OnGetLobbiesList(LobbyMatchList_t result)
     {
+        backDelegate = StopViewLobbiesClbk;
         ToggleAwaitCallbackMsg();
         lobbyIDS.Clear();
         for(int i=0; i< result.m_nLobbiesMatching; i++)
@@ -231,7 +223,6 @@ public class SteamMenu : NetworkLobbyManager {
             CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
             lobbyIDS.Add(lobbyID);
         }
-            lobbyHeader.text = "List of Lobbies";
             RefreshLobbies();
     }
 
@@ -243,25 +234,74 @@ public class SteamMenu : NetworkLobbyManager {
     void OnLobbyEntered(LobbyEnter_t result)
     {
         if(!isHost){
+            backDelegate = StopClientClbk;
             networkAddress = SteamMatchmaking.GetLobbyData((CSteamID)result.m_ulSteamIDLobby, "ServerIP");
             Debug.Log(networkAddress);
             StartClient();
-            ServerChangeScene(playScene);
         }
         foreach(GameObject lobby in lobbies)
         Destroy(lobby);
         lobbies.Clear();
         current_lobbyID = result.m_ulSteamIDLobby;
-        lobbyHeader.text = SteamMatchmaking.GetLobbyData((CSteamID)current_lobbyID, "name");
-        if (result.m_EChatRoomEnterResponse == 1){
-            int numPlayers = SteamMatchmaking.GetNumLobbyMembers((CSteamID)current_lobbyID);
-            for (int i = 0; i < numPlayers; i++)
-            {   
-                StartCoroutine(FetchAvatar(SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)current_lobbyID, i)));
-            }
-        }
-        else
-            Debug.Log("Failed to join lobby.");
+
+        // lobbyHeader.text = SteamMatchmaking.GetLobbyData((CSteamID)current_lobbyID, "name");
+
+        // if (result.m_EChatRoomEnterResponse == 1){
+        //     int numPlayers = SteamMatchmaking.GetNumLobbyMembers((CSteamID)current_lobbyID);
+        //     for (int i = 0; i < numPlayers; i++)
+        //     {   
+        //         StartCoroutine(FetchAvatar(SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)current_lobbyID, i)));
+        //     }
+        // }
+        // else
+        //     Debug.Log("Failed to join lobby.");
     }
+
+    public void AddLocalPlayer()
+    {
+        TryToAddPlayer();
+    }
+
+    public override void OnLobbyServerPlayersReady()
+    {
+        StartCoroutine(ServerCountdownCoroutine());
+    }
+       public IEnumerator ServerCountdownCoroutine()
+        {
+            ToggleAwaitCallbackMsg();
+            float remainingTime = prematchCountdown;
+            int floorTime = Mathf.FloorToInt(remainingTime);
+
+            while (remainingTime > 0)
+            {
+                yield return null;
+
+                remainingTime -= Time.deltaTime;
+                int newFloorTime = Mathf.FloorToInt(remainingTime);
+
+                if (newFloorTime != floorTime)
+                {//to avoid flooding the network of message, we only send a notice to client when the number of plain seconds change.
+                    floorTime = newFloorTime;
+
+                    for (int i = 0; i < lobbySlots.Length; ++i)
+                    {
+                        if (lobbySlots[i] != null)
+                        {//there is maxPlayer slots, so some could be == null, need to test it before accessing!
+                            (lobbySlots[i] as SteamLobbyPlayer).RpcUpdateCountdown(floorTime);
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < lobbySlots.Length; ++i)
+            {
+                if (lobbySlots[i] != null)
+                {
+                    (lobbySlots[i] as SteamLobbyPlayer).RpcUpdateCountdown(0);
+                }
+            }
+            
+            ServerChangeScene(playScene);
+        }
 
 }

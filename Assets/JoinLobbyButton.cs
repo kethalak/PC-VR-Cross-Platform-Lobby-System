@@ -11,6 +11,5 @@ public class JoinLobbyButton : MonoBehaviour {
 	}
 	void JoinLobby(){
 		SteamAPICall_t try_joinLobby = SteamMatchmaking.JoinLobby(joinID);
-		Debug.Log("test join");
 	}
 }
