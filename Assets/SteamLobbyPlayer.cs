@@ -12,8 +12,8 @@ public class SteamLobbyPlayer : NetworkLobbyPlayer {
 
 	// [SyncVar(hook = "OnGetAvatar")]
 	// public Sprite avatarSprite;
-	// [SyncVar(hook = "OnGetName")]
-	// public string playerNameString = "";
+	[SyncVar(hook = "OnGetName")]
+	public string playerNameString = "";
 
 	public Image playerAvatar;
 	public TextMeshProUGUI playerName;
@@ -99,7 +99,7 @@ public class SteamLobbyPlayer : NetworkLobbyPlayer {
 		CSteamID id = SteamUser.GetSteamID();
 		userInt = SteamFriends.GetMediumFriendAvatar(id);
 		// playerName.text = SteamFriends.GetPersonaName();
-		CmdNameChanged(SteamFriends.GetPersonaName());
+		OnGetName(SteamFriends.GetPersonaName());
 
 		while(userInt == -1){
 			yield return null;
@@ -118,9 +118,7 @@ public class SteamLobbyPlayer : NetworkLobbyPlayer {
 		}
 	}
 
-	[Command]
-	public void CmdNameChanged(string name)
-	{
+	public void OnGetName(string name){
 		playerName.text = name;
 	}
 
