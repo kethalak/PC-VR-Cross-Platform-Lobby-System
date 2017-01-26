@@ -16,8 +16,9 @@ public class SteamLobbyManager : NetworkLobbyManager {
     private Callback<LobbyMatchList_t> Callback_lobbyList;
     private Callback<LobbyEnter_t> Callback_lobbyEnter;
     private Callback<LobbyDataUpdate_t> Callback_lobbyInfo;
-
-    ulong current_lobbyID;
+    
+    [HideInInspector]
+    public ulong current_lobbyID;
     List<CSteamID> lobbyIDS;
 
 

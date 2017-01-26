@@ -96,10 +96,10 @@ public class SteamLobbyPlayer : NetworkLobbyPlayer {
 
 	IEnumerator GetSteamInfo()
 	{
-		CSteamID id = SteamUser.GetSteamID();
+		CSteamID id = SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobbyManager._instance.current_lobbyID, SteamLobbyPlayerList._instance._players.Count);
 		userInt = SteamFriends.GetMediumFriendAvatar(id);
 		// playerName.text = SteamFriends.GetPersonaName();
-		OnGetName(SteamFriends.GetPersonaName());
+		OnGetName(SteamFriends.GetFriendPersonaName(id));
 
 		while(userInt == -1){
 			yield return null;

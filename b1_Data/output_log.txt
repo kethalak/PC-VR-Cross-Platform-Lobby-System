@@ -2,10 +2,10 @@ Mono path[0] = 'C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lob
 Mono path[1] = 'C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/b1_Data/Mono'
 Mono config path = 'C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/b1_Data/Mono/etc'
 PlayerConnection initialized from C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/b1_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55318
-Multi-casting "[IP] 192.168.1.12 [Port] 55318 [Flags] 2 [Guid] 925873541 [EditorId] 4005719424 [Version] 1048832 [Id] WindowsPlayer(DESKTOP-CO689L8) [Debug] 0" to [225.0.0.222:54997]...
-Started listening to [0.0.0.0:55318]
-PlayerConnection already initialized - listening to [0.0.0.0:55318]
+PlayerConnection initialized network socket : 0.0.0.0 55333
+Multi-casting "[IP] 192.168.1.12 [Port] 55333 [Flags] 2 [Guid] 440691957 [EditorId] 3130517903 [Version] 1048832 [Id] WindowsPlayer(DESKTOP-CO689L8) [Debug] 0" to [225.0.0.222:54997]...
+Started listening to [0.0.0.0:55333]
+PlayerConnection already initialized - listening to [0.0.0.0:55333]
 Initialize engine version: 5.5.0f3 (38b4efef76f0)
 GfxDevice: creating device client; threaded=1
 Direct3D:
@@ -29,14 +29,109 @@ Platform assembly: C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-
 Loading C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\b1_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
 Platform assembly: C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\b1_Data\Managed\UnityEngine.VR.dll (this message is harmless)
 Loading C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\b1_Data\Managed\UnityEngine.VR.dll into Unity Child Domain
-- Completed reload, in  0.219 seconds
+- Completed reload, in  0.204 seconds
 Platform assembly: C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\b1_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\b1_Data\Managed\System.dll (this message is harmless)
 <RI> Initializing input.
 <RI> Input initialized.
 desktop: 1920x1080 60Hz; virtual: 3840x1261 at 0,-181
 <RI> Initialized touch support.
-UnloadTime: 1.242550 ms
+UnloadTime: 1.543606 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 39d4 -> priority: 1 
-  Thread -> id: 3790 -> priority: 1 
+  Thread -> id: 2698 -> priority: 1 
+  Thread -> id: 4c34 -> priority: 1 
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 6.666237 ms
+System memory in use before: 19.0 MB.
+System memory in use after: 19.1 MB.
+
+Unloading 5 unused Assets to reduce memory usage. Loaded Objects now: 698.
+Total: 0.933009 ms (FindLiveObjects: 0.071094 ms CreateObjectMapping: 0.024283 ms MarkObjects: 0.763026 ms  DeleteObjects: 0.011117 ms)
+
+Steam API init -- SUCCESS!
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SteamLobbyManager:Start() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\SteamLobbyManager.cs:64)
+ 
+(Filename: C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/Assets/SteamLobbyManager.cs Line: 64)
+
+Something Happened
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SteamLobbyManager:OnGetLobbyInfo(LobbyDataUpdate_t) (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\SteamLobbyManager.cs:231)
+Steamworks.Callback`1:OnRunCallback(IntPtr, IntPtr) (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Plugins\Steamworks.NET\CallbackDispatcher.cs:140)
+Steamworks.NativeMethods:SteamAPI_RunCallbacks()
+Steamworks.SteamAPI:RunCallbacks() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Plugins\Steamworks.NET\Steam.cs:77)
+SteamManager:Update() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Scripts\Steamwork.NET\SteamManager.cs:147)
+ 
+(Filename: C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/Assets/SteamLobbyManager.cs Line: 231)
+
+98.245.85.134
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SteamLobbyManager:OnLobbyEntered(LobbyEnter_t) (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\SteamLobbyManager.cs:239)
+Steamworks.Callback`1:OnRunCallback(IntPtr, IntPtr) (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Plugins\Steamworks.NET\CallbackDispatcher.cs:140)
+Steamworks.NativeMethods:SteamAPI_RunCallbacks()
+Steamworks.SteamAPI:RunCallbacks() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Plugins\Steamworks.NET\Steam.cs:77)
+SteamManager:Update() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Scripts\Steamwork.NET\SteamManager.cs:147)
+ 
+(Filename: C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/Assets/SteamLobbyManager.cs Line: 239)
+
+Something Happened
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SteamLobbyManager:OnGetLobbyInfo(LobbyDataUpdate_t) (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\SteamLobbyManager.cs:231)
+Steamworks.Callback`1:OnRunCallback(IntPtr, IntPtr) (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Plugins\Steamworks.NET\CallbackDispatcher.cs:140)
+Steamworks.NativeMethods:SteamAPI_RunCallbacks()
+Steamworks.SteamAPI:RunCallbacks() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Plugins\Steamworks.NET\Steam.cs:77)
+SteamManager:Update() (at C:\Users\ketha\Documents\projects\unity\PC-VR-Cross-Platform-Lobby-System\Assets\Scripts\Steamwork.NET\SteamManager.cs:147)
+ 
+(Filename: C:/Users/ketha/Documents/projects/unity/PC-VR-Cross-Platform-Lobby-System/Assets/SteamLobbyManager.cs Line: 231)
+
+DontDestroyOnLoad only work for root GameObjects or components on root GameObjects.
+UnityEngine.Object:DontDestroyOnLoad(Object)
+UnityEngine.Networking.NetworkLobbyPlayer:Start() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyPlayer.cs:24)
+
+[C:/buildslave/unity/build/Runtime/SceneManager/SceneManager.cpp line 447] 
+(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkLobbyPlayer.cs Line: 24)
+
+DontDestroyOnLoad only work for root GameObjects or components on root GameObjects.
+UnityEngine.Object:DontDestroyOnLoad(Object)
+UnityEngine.Networking.NetworkLobbyPlayer:Start() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyPlayer.cs:24)
+
+[C:/buildslave/unity/build/Runtime/SceneManager/SceneManager.cpp line 447] 
+(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkLobbyPlayer.cs Line: 24)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:98.245.85.134:7777}
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+ClientDisconnected due to error: Timeout
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:LogError(Object)
+UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1125)
+UnityEngine.Networking.NetworkLobbyManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyManager.cs:554)
+UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:954)
+UnityEngine.Networking.NetworkConnection:InvokeHandler(Int16, NetworkReader, Int32) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:217)
+UnityEngine.Networking.NetworkConnection:InvokeHandlerNoData(Int16) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:199)
+UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:753)
+UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:950)
+UnityEngine.Networking.NetworkIdentity:UNetStaticUpdate() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1073)
+ 
+(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1125)
+
+UnloadTime: 0.316269 ms
+System memory in use before: 25.8 MB.
+System memory in use after: 25.8 MB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 790.
+Total: 0.959341 ms (FindLiveObjects: 0.021357 ms CreateObjectMapping: 0.024868 ms MarkObjects: 0.902875 ms  DeleteObjects: 0.009947 ms)
+

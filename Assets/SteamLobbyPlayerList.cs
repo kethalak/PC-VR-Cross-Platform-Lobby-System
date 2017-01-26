@@ -9,7 +9,7 @@ public class SteamLobbyPlayerList : MonoBehaviour {
 	public RectTransform playerListContentTransform;
 
 	protected VerticalLayoutGroup _layout;
-	protected List<SteamLobbyPlayer> _players = new List<SteamLobbyPlayer>();
+	public List<SteamLobbyPlayer> _players = new List<SteamLobbyPlayer>();
 
 
 	public void OnEnable()
